@@ -1,0 +1,28 @@
+
+name: Compile Contracts
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Compile Addition smart contract
+        run: |
+          mkdir -p build
+          docker run --rm \
+            -v "$PWD/contracts:/sources" \
+            -v "$PWD/build:/output" \
+            ethereum/solc:0.8.24 \
+            --overwrite --combined-json abi,bin -o /output /sources/HelloWorld.sol
